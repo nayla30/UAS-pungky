@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZakatPay</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@700&family=Literata&display=swap" rel="stylesheet">
+</head>
+<body class="bg-ivory min-h-screen flex flex-col">
+    <header class="bg-green text-white flex items-center justify-between px-6 py-4 shadow">
+        <div class="flex items-center gap-2">
+            {% include '_icon_handheart.svg' %}
+            <span class="font-pt-sans text-2xl font-bold">ZakatPay</span>
+        </div>
+        <button id="addPayerBtn" class="btn btn-primary flex items-center gap-2">
+            {% include '_icon_pluscircle.svg' %}
+            <span>Tambah Pembayar</span>
+        </button>
+    </header>
+    <main class="flex-1 flex flex-col items-center justify-start px-2 py-6">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="bg-green text-white text-center py-2 text-sm">
+        © {{ year }} ZakatPay. Membantu Anda menunaikan kewajiban.
+    </footer>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

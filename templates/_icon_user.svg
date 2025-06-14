@@ -1,0 +1,5 @@
+// Ikon User
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#388E3C" width="20" height="20">
+  <circle cx="12" cy="8" r="4" stroke="#388E3C" stroke-width="1.5" fill="none"/>
+  <path stroke-linecap="round" stroke-linejoin="round" d="M4 20c0-4 4-7 8-7s8 3 8 7" />
+</svg>

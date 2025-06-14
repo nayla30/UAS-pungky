@@ -1,0 +1,42 @@
+<div id="payerModal" class="modal hidden">
+  <div class="modal-content">
+    <form id="payerForm" autocomplete="off">
+      <h2 id="modalTitle" class="text-xl font-bold mb-4">Tambah Pembayar</h2>
+      <div class="form-group">
+        <label for="name">Nama</label>
+        <div class="input-icon">
+          {% include '_icon_user.svg' %}
+          <input type="text" id="name" name="name" minlength="2" required placeholder="Nama Pembayar">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="amount">Jumlah Pembayaran</label>
+        <div class="input-icon">
+          {% include '_icon_dollarsign.svg' %}
+          <input type="number" id="amount" name="amount" min="1" required placeholder="Jumlah (Rp)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="pay_date">Tanggal Pembayaran</label>
+        <div class="input-icon">
+          {% include '_icon_calendar.svg' %}
+          <input type="date" id="pay_date" name="pay_date" required>
+        </div>
+      </div>
+      <div class="flex gap-2 mt-6">
+        <button type="submit" class="btn btn-primary">Simpan Pembayar</button>
+        <button type="button" class="btn btn-outline" id="cancelBtn">Batal</button>
+      </div>
+      <input type="hidden" id="payerId" name="payerId">
+    </form>
+  </div>
+</div>
+<div id="confirmDialog" class="modal hidden">
+  <div class="modal-content">
+    <p id="confirmText" class="mb-4"></p>
+    <div class="flex gap-2">
+      <button id="confirmYes" class="btn btn-danger">Ya, Hapus</button>
+      <button id="confirmNo" class="btn btn-outline">Batal</button>
+    </div>
+  </div>
+</div>
