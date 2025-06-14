@@ -3,67 +3,64 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///zakatpay.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///zakat.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-class Payer(db.Model):
+class Pembayar(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    amount = db.Column(db.Integer, nullable=False)
-    pay_date = db.Column(db.Date, nullable=False)
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'amount': self.amount,
-            'pay_date': self.pay_date.strftime('%Y-%m-%d')
-        }
+    amount = db.Column(db.Float, nullable=False)
+    datePaid = db.Column(db.Date, nullable=False)
+    notes = db.Column(db.Text, default='')
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    pembayars = Pembayar.query.all()
+    return render_template('index.html', pembayars=pembayars)
 
-@app.route('/api/payers', methods=['GET'])
-def get_payers():
-    payers = Payer.query.order_by(Payer.pay_date.desc()).all()
-    return jsonify([p.to_dict() for p in payers])
-
-@app.route('/api/payers', methods=['POST'])
-def add_payer():
+@app.route('/api/pembayar', methods=['POST'])
+def add_pembayar():
     data = request.json
-    name = data.get('name', '').strip()
-    amount = data.get('amount')
-    pay_date = data.get('pay_date')
-    if not name or len(name) < 2 or not amount or int(amount) <= 0 or not pay_date:
-        return jsonify({'error': 'Data tidak valid.'}), 400
-    payer = Payer(name=name, amount=int(amount), pay_date=datetime.strptime(pay_date, '%Y-%m-%d'))
-    db.session.add(payer)
+    pembayar = Pembayar(
+        name=data['name'],
+        amount=data['amount'],
+        datePaid=datetime.strptime(data['datePaid'], '%Y-%m-%d'),
+        notes=data.get('notes', '')
+    )
+    db.session.add(pembayar)
     db.session.commit()
-    return jsonify(payer.to_dict()), 201
+    return jsonify({'message': 'Pembayar berhasil ditambahkan'}), 201
 
-@app.route('/api/payers/<int:payer_id>', methods=['PUT'])
-def update_payer(payer_id):
-    payer = Payer.query.get_or_404(payer_id)
+@app.route('/api/pembayar/<int:id>', methods=['PUT'])
+def update_pembayar(id):
+    pembayar = Pembayar.query.get_or_404(id)
     data = request.json
-    name = data.get('name', '').strip()
-    amount = data.get('amount')
-    pay_date = data.get('pay_date')
-    if not name or len(name) < 2 or not amount or int(amount) <= 0 or not pay_date:
-        return jsonify({'error': 'Data tidak valid.'}), 400
-    payer.name = name
-    payer.amount = int(amount)
-    payer.pay_date = datetime.strptime(pay_date, '%Y-%m-%d')
+    print('Data received for update:', data)  # Debug log
+    pembayar.name = data['name']
+    pembayar.amount = data['amount']
+    pembayar.datePaid = datetime.strptime(data['datePaid'], '%Y-%m-%d')
+    pembayar.notes = data.get('notes', '')
     db.session.commit()
-    return jsonify(payer.to_dict())
+    return jsonify({'message': 'Pembayar berhasil diperbarui'})
 
-@app.route('/api/payers/<int:payer_id>', methods=['DELETE'])
-def delete_payer(payer_id):
-    payer = Payer.query.get_or_404(payer_id)
-    db.session.delete(payer)
+@app.route('/api/pembayar/<int:id>', methods=['DELETE'])
+def delete_pembayar(id):
+    pembayar = Pembayar.query.get_or_404(id)
+    db.session.delete(pembayar)
     db.session.commit()
-    return jsonify({'result': True})
+    return jsonify({'message': 'Pembayar berhasil dihapus'})
+
+@app.route('/api/pembayar/<int:id>', methods=['GET'])
+def get_pembayar(id):
+    pembayar = Pembayar.query.get_or_404(id)
+    return jsonify({
+        'id': pembayar.id,
+        'name': pembayar.name,
+        'amount': pembayar.amount,
+        'datePaid': pembayar.datePaid.strftime('%Y-%m-%d'),
+        'notes': pembayar.notes
+    })
 
 if __name__ == '__main__':
     with app.app_context():

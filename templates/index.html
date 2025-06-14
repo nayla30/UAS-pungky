@@ -1,8 +1,133 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
 {% block content %}
-<div class="w-full max-w-3xl">
-    <div id="noti" class="hidden"></div>
-    <div id="payersTableWrap"></div>
+<h2>Daftar Pembayar Zakat</h2>
+<button onclick="showForm()">Tambah Pembayar Baru</button>
+
+<table border="1" style="width: 100%; margin-top: 1rem;">
+    <thead>
+        <tr>
+            <th>Nama</th>
+            <th>Jumlah</th>
+            <th>Tanggal Bayar</th>
+            <th>Catatan</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pembayar in pembayars %}
+        <tr>
+            <td>{{ pembayar.name }}</td>
+            <td>Rp {{ "{:,}".format(pembayar.amount).replace(",", ".") }}</td>
+            <td>{{ pembayar.datePaid.strftime('%d %B %Y') }}</td>
+            <td>{{ pembayar.notes }}</td>
+            <td>
+                <button onclick="editPembayar({{ pembayar.id }})">Edit</button>
+                <button onclick="deletePembayar({{ pembayar.id }})">Hapus</button>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" style="text-align: center;">Tidak ada data pembayar zakat.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div id="formModal" style="display: none;">
+    <form id="pembayarForm" onsubmit="submitForm(event)">
+        <input type="hidden" id="pembayarId">
+        <label for="name">Nama:</label>
+        <input type="text" id="name" required>
+
+        <label for="amount">Jumlah:</label>
+        <input type="number" id="amount" required>
+
+        <label for="datePaid">Tanggal Bayar:</label>
+        <input type="date" id="datePaid" required>
+
+        <label for="notes">Catatan:</label>
+        <textarea id="notes"></textarea>
+
+        <button type="submit">Simpan</button>
+        <button type="button" onclick="closeForm()">Batal</button>
+    </form>
 </div>
-{% include '_form_modal.html' %}
+
+<script>
+function showForm(isEdit = false) {
+    document.getElementById('formModal').style.display = 'block';
+    if (!isEdit) {
+        document.getElementById('pembayarForm').reset();
+        document.getElementById('pembayarId').value = '';
+    }
+}
+
+function closeForm() {
+    document.getElementById('formModal').style.display = 'none';
+}
+
+function editPembayar(id) {
+    fetch(`/api/pembayar/${id}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById('pembayarId').value = data.id;
+            document.getElementById('name').value = data.name;
+            document.getElementById('amount').value = data.amount;
+            document.getElementById('datePaid').value = data.datePaid;
+            document.getElementById('notes').value = data.notes;
+            showForm(true); // Open the form modal in edit mode
+        })
+        .catch(error => {
+            console.error('Error fetching pembayar data:', error);
+            alert('Terjadi kesalahan saat mengambil data pembayar.');
+        });
+}
+
+function deletePembayar(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+        fetch(`/api/pembayar/${id}`, { method: 'DELETE' })
+            .then(() => location.reload());
+    }
+}
+
+function submitForm(event) {
+    event.preventDefault();
+    const id = document.getElementById('pembayarId').value;
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `/api/pembayar/${id}` : '/api/pembayar';
+
+    const data = {
+        name: document.getElementById('name').value,
+        amount: parseFloat(document.getElementById('amount').value),
+        datePaid: document.getElementById('datePaid').value,
+        notes: document.getElementById('notes').value
+    };
+
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(() => {
+        closeForm();
+        location.reload();
+    })
+    .catch(error => {
+        console.error('Error submitting form:', error);
+        alert('Terjadi kesalahan saat menyimpan data.');
+    });
+}
+</script>
 {% endblock %}

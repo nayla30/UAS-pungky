@@ -1,7 +1,0 @@
-// Ikon ilustrasi kosong
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 48 48" width="48" height="48">
-  <rect x="4" y="12" width="40" height="28" rx="4" fill="#E8F5E9" stroke="#388E3C" stroke-width="2"/>
-  <path d="M8 36l8-8 8 8 8-8 8 8" stroke="#AFA06F" stroke-width="2" fill="none"/>
-  <circle cx="16" cy="22" r="2" fill="#AFA06F"/>
-  <circle cx="32" cy="22" r="2" fill="#AFA06F"/>
-</svg>

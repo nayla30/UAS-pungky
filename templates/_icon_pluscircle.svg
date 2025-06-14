@@ -1,5 +1,0 @@
-// Ikon PlusCircle
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#fff" width="22" height="22">
-  <circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.5" fill="none"/>
-  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v8m4-4H8" />
-</svg>
